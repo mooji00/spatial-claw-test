@@ -9,12 +9,6 @@
   html,body{margin:0;padding:0;height:100%;background:#000;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
   #cam{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;background:#000;}
 
-  #gate{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#0a0a0a;color:#eee;text-align:center;padding:0 32px;z-index:50;}
-  #gate h1{font-size:20px;margin:0;font-weight:600;}
-  #gate p{font-size:14px;color:#999;margin:0;max-width:320px;line-height:1.5;}
-  #startBtn{margin-top:10px;padding:14px 28px;border-radius:30px;border:none;background:#fff;color:#111;font-size:15px;font-weight:600;cursor:pointer;}
-  #gate.hidden{display:none;}
-
   .hud{position:fixed;inset:0;pointer-events:none;z-index:10;display:none;}
   .hud.active{display:block;}
 
@@ -37,29 +31,10 @@
   #sceneDots span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);}
   #sceneDots span.on{background:#fff;}
 
-  #rotatePrompt{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#0a0a0a;color:#eee;text-align:center;padding:0 32px;}
-  #rotatePrompt svg{width:64px;height:64px;color:#fff;animation:tilt 1.6s ease-in-out infinite;}
-  #rotatePrompt p{font-size:15px;color:#999;margin:0;max-width:280px;line-height:1.5;}
-  @keyframes tilt{0%,100%{transform:rotate(0deg);}50%{transform:rotate(90deg);}}
-  @media (orientation: portrait){
-    #rotatePrompt{display:flex;}
-    #gate, #cam, .hud, #nextBtn, #sceneDots, .clock-readout{display:none !important;}
-  }
+  #errMsg{position:fixed;bottom:18px;left:18px;right:18px;z-index:30;color:#ff8a8a;font-size:12px;display:none;}
 </style>
 </head>
 <body>
-
-<div id="rotatePrompt">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="6" y="3" width="12" height="18" rx="2"/><line x1="10" y1="20" x2="14" y2="20"/></svg>
-  <p>Rotate your phone to landscape — the AR view is designed for the wide field of view of the glasses display.</p>
-</div>
-
-<div id="gate">
-  <h1>Spatial Claw — AR view demo</h1>
-  <p>This shows the glasses overlay over your real camera feed, the same way it would appear through a transparent AR display. Point your phone outward like you're wearing the glasses.</p>
-  <button id="startBtn">Enable camera</button>
-  <p id="err" style="color:#ff8a8a;"></p>
-</div>
 
 <video id="cam" autoplay muted playsinline></video>
 
@@ -102,12 +77,11 @@
 <div class="clock-readout active" id="clockReadout">6:42 PM</div>
 <div id="sceneDots"><span class="on"></span><span></span><span></span></div>
 <button id="nextBtn">Next scene →</button>
+<div id="errMsg"></div>
 
 <script>
   const video = document.getElementById('cam');
-  const gate = document.getElementById('gate');
-  const startBtn = document.getElementById('startBtn');
-  const err = document.getElementById('err');
+  const errMsg = document.getElementById('errMsg');
   const scenes = [
     { el: document.getElementById('scene1'), time: '6:42 PM' },
     { el: document.getElementById('scene2'), time: '6:58 PM' },
@@ -128,20 +102,21 @@
     showScene(current);
   });
 
-  startBtn.addEventListener('click', async () => {
+  (async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
       video.srcObject = stream;
-      gate.classList.add('hidden');
       showScene(0);
       try {
         if (document.documentElement.requestFullscreen) { await document.documentElement.requestFullscreen(); }
         if (screen.orientation && screen.orientation.lock) { await screen.orientation.lock('landscape'); }
-      } catch (lockErr) { /* not supported on this browser, the rotate prompt covers it */ }
+      } catch (lockErr) { /* fullscreen/orientation lock not available on this browser, harmless */ }
     } catch (e) {
-      err.textContent = 'Camera access failed: ' + e.message + '. Make sure this page is loaded over HTTPS and you allow camera permission.';
+      showScene(0);
+      errMsg.style.display = 'block';
+      errMsg.textContent = 'Camera not available: ' + e.message + ' (page must be served over HTTPS with camera permission allowed)';
     }
-  });
+  })();
 </script>
 </body>
 </html>
