@@ -41,19 +41,19 @@
   /* ---------- Landing ---------- */
   #landing{ text-align:center; }
   #landing.active{ display:flex; flex-direction:column; align-items:center; justify-content:center; }
-  .top-bar{ position:fixed; top:40px; left:0; right:0; display:flex; justify-content:space-between; padding:0 6vw; pointer-events:none; z-index:30; }
+.search-row{ display:flex; align-items:center; justify-content:space-between; width:100%; max-width:1000px; gap:24px; margin:0 auto; }
   .icon-btn{ pointer-events:auto; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; background:none; border:none; }
   .icon-circle{ width:64px; height:64px; border-radius:50%; background:rgba(255,255,255,0.7); display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(60,80,140,0.12); transition:transform .15s ease, background .15s ease; }
   .icon-btn:hover .icon-circle{ background:#ffffff; transform:translateY(-2px); }
   .icon-btn span{ font-size:12px; color:var(--muted); }
-  .dots-icon, .gear-icon{ font-size:26px; color:var(--navy-soft); line-height:1; }
+  .dots-icon, .gear-icon{ font-size:36px; color:var(--navy-soft); line-height:1; }
   .welcome{ font-size:clamp(28px,4vw,40px); color:var(--navy-soft); margin:0 0 40px; }
   .search-bar{ background:#fbfbfb; border-radius:54px; padding:24px 40px; width:min(560px,80vw); display:flex; align-items:center; justify-content:space-between; gap:12px; box-shadow:0 12px 30px rgba(60,80,140,0.12); cursor:text; }
   .search-bar span{ color:var(--muted); font-size:18px; }
   .search-bar .arrow{ width:22px; height:22px; border:2px solid var(--muted); border-radius:50%; flex-shrink:0; position:relative; }
   .status-line{ color:var(--navy); font-size:clamp(20px,2.6vw,30px); margin:56px 0 28px; }
-  .status-row{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; max-width:760px; }
-  .chip{ display:flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--line); border-radius:19px; padding:8px 16px; font-size:13px; font-weight:700; color:var(--navy); }
+  .status-row{ display:flex; flex-wrap:nowrap; gap:10px; justify-content:center; max-width:100%; overflow-x:auto; padding:4px 2px; }
+  .chip{ display:flex; align-items:center; gap:7px; background:#fff; border:1px solid var(--line); border-radius:19px; padding:8px 13px; font-size:13px; font-weight:700; color:var(--navy); flex-shrink:0; }
   .dot{ width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 
   /* ---------- Work Claw Log ---------- */
@@ -66,8 +66,11 @@
   .panel{ background:var(--card-bg); border:1px solid var(--line); border-radius:14px; padding:20px; min-height:200px; }
 
   .tag-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  .tag-chip{ border:1px solid var(--line); border-radius:10px; padding:12px; }
-  .tag-swatch{ width:40px; height:40px; background:#e4e4e4; border:1px solid var(--line); border-radius:4px; margin-bottom:10px; }
+  .tag-chip{ border:1px solid var(--line); border-radius:10px; padding:12px; cursor:pointer; transition:border-color .15s ease, background .15s ease; }
+  .tag-chip:hover{ border-color:var(--pet); }
+  .tag-chip.selected{ border:2px solid var(--pet); background:#f2fbf6; }
+  .tag-swatch{ width:40px; height:40px; background:#e4e4e4; border:1px solid var(--line); border-radius:4px; margin-bottom:10px; transition:background .15s ease, border-color .15s ease; }
+  .tag-chip.selected .tag-swatch{ background:var(--pet); border-color:var(--pet); }
   .tag-chip p{ margin:0; font-weight:700; color:var(--navy); font-size:13px; }
 
   .history-row{ display:flex; gap:16px; padding:12px 0; border-bottom:1px solid #eee; font-size:13px; }
@@ -94,6 +97,20 @@
   .view-log-btn{ margin-top:16px; width:100%; padding:9px; border-radius:8px; border:1px solid var(--line); background:#fff; color:var(--navy); font-weight:700; font-size:13px; cursor:pointer; }
   .view-log-btn:hover{ background:#f6f7fb; }
 
+  /* ---------- Pet Claw Log ---------- */
+  .reminder-row{ display:flex; flex-direction:column; gap:2px; padding:14px 0; border-bottom:1px solid #eee; }
+  .reminder-row:last-child{ border-bottom:none; }
+  .reminder-title{ color:var(--navy); font-weight:700; font-size:13px; }
+  .reminder-sub{ font-size:12px; color:var(--muted); }
+  .reminder-when{ font-size:12px; color:var(--cook); font-weight:700; margin-top:2px; }
+
+  .activity-stats{ font-size:13px; color:var(--navy); font-weight:700; margin:0 0 16px; }
+  .activity-chart{ display:flex; align-items:flex-end; gap:8px; height:80px; margin-bottom:16px; }
+  .bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end; }
+  .bar{ width:100%; max-width:20px; background:var(--pet); border-radius:4px 4px 0 0; }
+  .bar-label{ font-size:10px; color:var(--muted); }
+  .activity-note{ font-size:12px; margin:4px 0; color:var(--muted); }
+
   /* ---------- Drawers ---------- */
   .overlay{ position:fixed; inset:0; background:rgba(20,25,45,0.35); opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:40; }
   .overlay.open{ opacity:1; pointer-events:auto; }
@@ -109,21 +126,20 @@
 
   @media (max-width:600px){
     .drawer{ width:80vw; padding:40px 24px; }
-    .top-bar{ top:20px; }
+    .search-row{ gap:8px; }
   }
 </style>
 </head>
 <body>
 
-  <div class="top-bar">
-    <button class="icon-btn" id="menuBtn"><span class="icon-circle"><span class="dots-icon">&#8943;</span></span><span>Menu</span></button>
-    <button class="icon-btn" id="settingsBtn"><span class="icon-circle"><span class="gear-icon">&#9881;</span></span><span>Settings</span></button>
-  </div>
-
   <!-- Landing screen -->
   <section id="landing" class="screen active">
     <h1 class="welcome pixel">Welcome back Kayla,</h1>
-    <div class="search-bar"><span>what are you looking for today?</span><span class="arrow"></span></div>
+    <div class="search-row">
+      <button class="icon-btn" id="menuBtn"><span class="icon-circle"><span class="dots-icon">&#8943;</span></span><span>Menu</span></button>
+      <div class="search-bar"><span>what are you looking for today?</span><span class="arrow"></span></div>
+      <button class="icon-btn" id="settingsBtn"><span class="icon-circle"><span class="gear-icon">&#9881;</span></span><span>Settings</span></button>
+    </div>
     <h2 class="status-line pixel">Spatial claws are locked in and working</h2>
     <div class="status-row">
       <div class="chip"><span class="dot" style="background:var(--work)"></span>Work Claw</div>
@@ -145,7 +161,7 @@
         <p class="panel-label">Tagged Object</p>
         <div class="panel">
           <div class="tag-grid">
-            <div class="tag-chip"><div class="tag-swatch"></div><p>Desk</p></div>
+            <div class="tag-chip selected"><div class="tag-swatch"></div><p>Desk</p></div>
             <div class="tag-chip"><div class="tag-swatch"></div><p>Laptop</p></div>
             <div class="tag-chip"><div class="tag-swatch"></div><p>Notebook</p></div>
             <div class="tag-chip"><div class="tag-swatch"></div><p>Coffee mug</p></div>
@@ -207,14 +223,97 @@
     </div>
   </section>
 
-  <!-- Overlay + Drawers -->
+  <!-- Pet Claw Log screen -->
+  <section id="petlog" class="screen">
+    <a class="back-link">&larr; Back</a>
+    <h2 class="log-title pixel">Pet Claw Log</h2>
+
+    <div class="grid-row">
+      <div>
+        <p class="panel-label">Tagged Object</p>
+        <div class="panel">
+          <div class="tag-grid">
+            <div class="tag-chip selected"><div class="tag-swatch"></div><p>Leash</p></div>
+            <div class="tag-chip"><div class="tag-swatch"></div><p>Food bowl</p></div>
+            <div class="tag-chip"><div class="tag-swatch"></div><p>Dog bed</p></div>
+            <div class="tag-chip"><div class="tag-swatch"></div><p>Toy</p></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="panel-label">Interaction History</p>
+        <div class="panel">
+          <div class="history-row"><span class="time">7:15 AM</span><span>Logged morning walk (22 min)</span></div>
+          <div class="history-row"><span class="time">12:30 PM</span><span>Sent water bowl refill reminder</span></div>
+          <div class="history-row"><span class="time">6:42 PM</span><span>Started evening walk reminder</span></div>
+          <div class="history-row"><span class="time">7:05 PM</span><span>Rerouted walk due to incoming rain</span></div>
+          <div class="history-row"><span class="time">7:23 PM</span><span>Logged completed walk (18 min)</span></div>
+        </div>
+      </div>
+      <div>
+        <p class="panel-label">Pet Profile</p>
+        <div class="panel status-card">
+          <div class="avatar">LU</div>
+          <h4>Luna</h4>
+          <p>Golden Retriever</p>
+          <p>3 years &middot; 28 kg</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-row">
+      <div>
+        <p class="panel-label">Currently working on..</p>
+        <div class="panel">
+          <p class="task-title">Dog food subscription budgeting</p>
+          <div class="track"><div class="fill" style="width:40%"></div></div>
+          <p class="note">40% complete</p>
+          <p class="note">Comparing 3 subscription plans</p>
+          <p class="note">Coordinating with Finance Claw on monthly budget</p>
+          <p class="note">Decision needed by Friday</p>
+        </div>
+      </div>
+      <div>
+        <p class="panel-label">Dog Walk / Activity</p>
+        <div class="panel">
+          <p class="activity-stats">Today: 2 walks &middot; 40 min &middot; 2.1 mi</p>
+          <div class="activity-chart">
+            <div class="bar-col"><div class="bar" style="height:55%"></div><span class="bar-label">Mon</span></div>
+            <div class="bar-col"><div class="bar" style="height:70%"></div><span class="bar-label">Tue</span></div>
+            <div class="bar-col"><div class="bar" style="height:40%"></div><span class="bar-label">Wed</span></div>
+            <div class="bar-col"><div class="bar" style="height:85%"></div><span class="bar-label">Thu</span></div>
+            <div class="bar-col"><div class="bar" style="height:60%"></div><span class="bar-label">Fri</span></div>
+            <div class="bar-col"><div class="bar" style="height:95%"></div><span class="bar-label">Sat</span></div>
+            <div class="bar-col"><div class="bar" style="height:65%"></div><span class="bar-label">Sun</span></div>
+          </div>
+          <p class="activity-note">This week: 12 walks &middot; 4h 50m &middot; 14.2 mi</p>
+          <p class="activity-note">Last walk: 7:23 PM &middot; 18 min &middot; 0.9 mi</p>
+        </div>
+      </div>
+      <div>
+        <p class="panel-label">Reminders</p>
+        <div class="panel">
+          <div class="reminder-row">
+            <span class="reminder-title">Vet visit</span>
+            <span class="reminder-when">Wed, 2:00 PM</span>
+            <span class="reminder-sub">Annual checkup</span>
+          </div>
+          <div class="reminder-row">
+            <span class="reminder-title">Dog food purchase</span>
+            <span class="reminder-when">Due in 3 days</span>
+            <span class="reminder-sub">4 days of food left</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
   <div class="overlay" id="overlay"></div>
 
   <aside class="drawer drawer-left" id="leftDrawer">
     <button class="close-x" id="leftClose">&times;</button>
     <h3 class="pixel">Your Claws</h3>
     <span class="drawer-item live" id="workClawLink">Work Claw</span>
-    <span class="drawer-item">Pet Claw</span>
+    <span class="drawer-item live" id="petClawLink">Pet Claw</span>
     <span class="drawer-item">Plant Claw</span>
     <span class="drawer-item">Schedule Claw</span>
     <span class="drawer-item">Finance Claw</span>
@@ -260,7 +359,17 @@
   overlay.addEventListener('click', closeDrawers);
 
   document.getElementById('workClawLink').addEventListener('click', () => { closeDrawers(); showScreen('worklog'); });
-  document.getElementById('backBtn').addEventListener('click', () => showScreen('landing'));
+  document.getElementById('petClawLink').addEventListener('click', () => { closeDrawers(); showScreen('petlog'); });
+  document.querySelectorAll('.back-link').forEach(b => b.addEventListener('click', () => showScreen('landing')));
+
+  document.querySelectorAll('.tag-grid').forEach(grid => {
+    grid.querySelectorAll('.tag-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        grid.querySelectorAll('.tag-chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+      });
+    });
+  });
 </script>
 </body>
 </html>
