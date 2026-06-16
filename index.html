@@ -39,8 +39,9 @@
   .screen.active{ display:block; }
 
   /* ---------- Landing ---------- */
-  #landing{ display:flex; flex-direction:column; align-items:center; justify-content:flex-start; text-align:center; padding-top:8vh; }
-  .top-bar{ position:fixed; top:40px; left:0; right:0; display:flex; justify-content:space-between; padding:0 6vw; pointer-events:none; }
+  #landing{ text-align:center; }
+  #landing.active{ display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .top-bar{ position:fixed; top:40px; left:0; right:0; display:flex; justify-content:space-between; padding:0 6vw; pointer-events:none; z-index:30; }
   .icon-btn{ pointer-events:auto; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; background:none; border:none; }
   .icon-circle{ width:64px; height:64px; border-radius:50%; background:rgba(255,255,255,0.7); display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(60,80,140,0.12); transition:transform .15s ease, background .15s ease; }
   .icon-btn:hover .icon-circle{ background:#ffffff; transform:translateY(-2px); }
