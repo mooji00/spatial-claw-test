@@ -36,9 +36,23 @@
   #sceneDots{position:fixed;bottom:11%;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:20;}
   #sceneDots span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);}
   #sceneDots span.on{background:#fff;}
+
+  #rotatePrompt{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#0a0a0a;color:#eee;text-align:center;padding:0 32px;}
+  #rotatePrompt svg{width:64px;height:64px;color:#fff;animation:tilt 1.6s ease-in-out infinite;}
+  #rotatePrompt p{font-size:15px;color:#999;margin:0;max-width:280px;line-height:1.5;}
+  @keyframes tilt{0%,100%{transform:rotate(0deg);}50%{transform:rotate(90deg);}}
+  @media (orientation: portrait){
+    #rotatePrompt{display:flex;}
+    #gate, #cam, .hud, #nextBtn, #sceneDots, .clock-readout{display:none !important;}
+  }
 </style>
 </head>
 <body>
+
+<div id="rotatePrompt">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="6" y="3" width="12" height="18" rx="2"/><line x1="10" y1="20" x2="14" y2="20"/></svg>
+  <p>Rotate your phone to landscape — the AR view is designed for the wide field of view of the glasses display.</p>
+</div>
 
 <div id="gate">
   <h1>Spatial Claw — AR view demo</h1>
@@ -120,6 +134,10 @@
       video.srcObject = stream;
       gate.classList.add('hidden');
       showScene(0);
+      try {
+        if (document.documentElement.requestFullscreen) { await document.documentElement.requestFullscreen(); }
+        if (screen.orientation && screen.orientation.lock) { await screen.orientation.lock('landscape'); }
+      } catch (lockErr) { /* not supported on this browser, the rotate prompt covers it */ }
     } catch (e) {
       err.textContent = 'Camera access failed: ' + e.message + '. Make sure this page is loaded over HTTPS and you allow camera permission.';
     }
