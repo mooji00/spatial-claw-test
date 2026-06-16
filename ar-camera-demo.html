@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Spatial Claw — AR Camera Demo</title>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;background:#000;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+  #cam{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;background:#000;}
+
+  #gate{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#0a0a0a;color:#eee;text-align:center;padding:0 32px;z-index:50;}
+  #gate h1{font-size:20px;margin:0;font-weight:600;}
+  #gate p{font-size:14px;color:#999;margin:0;max-width:320px;line-height:1.5;}
+  #startBtn{margin-top:10px;padding:14px 28px;border-radius:30px;border:none;background:#fff;color:#111;font-size:15px;font-weight:600;cursor:pointer;}
+  #gate.hidden{display:none;}
+
+  .hud{position:fixed;inset:0;pointer-events:none;z-index:10;display:none;}
+  .hud.active{display:block;}
+
+  .item{position:absolute;display:flex;align-items:center;gap:14px;right:6%;}
+  .item .ico{width:40px;height:40px;flex-shrink:0;}
+  .item .ico svg{width:100%;height:100%;}
+  .item .txt{display:flex;flex-direction:column;gap:6px;}
+  .item .headline{color:#f5f5f2;font-size:21px;font-weight:700;text-shadow:0 0 12px rgba(0,0,0,0.6);}
+  .pinch{display:flex;gap:4px;}
+  .pinch span{width:9px;height:9px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.55);}
+
+  .item1{top:14%;}
+  .item2{top:34%;}
+
+  .clock-readout{position:fixed;bottom:6%;right:6%;color:rgba(255,255,255,0.55);font-size:13px;z-index:10;display:none;}
+  .clock-readout.active{display:block;}
+
+  #nextBtn{position:fixed;bottom:5%;left:50%;transform:translateX(-50%);z-index:20;padding:12px 26px;border-radius:30px;border:1px solid rgba(255,255,255,0.3);background:rgba(20,20,20,0.55);color:#fff;font-size:14px;font-weight:600;cursor:pointer;backdrop-filter:blur(6px);}
+  #sceneDots{position:fixed;bottom:11%;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:20;}
+  #sceneDots span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);}
+  #sceneDots span.on{background:#fff;}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>Spatial Claw — AR view demo</h1>
+  <p>This shows the glasses overlay over your real camera feed, the same way it would appear through a transparent AR display. Point your phone outward like you're wearing the glasses.</p>
+  <button id="startBtn">Enable camera</button>
+  <p id="err" style="color:#ff8a8a;"></p>
+</div>
+
+<video id="cam" autoplay muted playsinline></video>
+
+<!-- Scene 1: indoor pre-walk -->
+<div class="hud" id="scene1">
+  <div class="item item1">
+    <span class="ico" style="color:#22C55E"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="20" cy="24" r="9"/><circle cx="12" cy="13" r="3.2"/><circle cx="20" cy="9" r="3.2"/><circle cx="28" cy="13" r="3.2"/></svg></span>
+    <div class="txt"><span class="headline">Walk time</span><span class="pinch"><span></span><span></span></span></div>
+  </div>
+  <div class="item item2">
+    <span class="ico" style="color:#FB923C"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 22 a14 8 0 0 0 28 0"/><line x1="20" y1="8" x2="20" y2="16"/></svg></span>
+    <div class="txt"><span class="headline">Dinner 7:30</span><span class="pinch"><span></span><span></span></span></div>
+  </div>
+</div>
+
+<!-- Scene 2: outdoor mid-walk -->
+<div class="hud" id="scene2">
+  <div class="item item1">
+    <span class="ico" style="color:#3B82F6"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><ellipse cx="20" cy="16" rx="14" ry="8"/><line x1="14" y1="28" x2="11" y2="34"/><line x1="26" y1="28" x2="23" y2="34"/></svg></span>
+    <div class="txt"><span class="headline">Rain in 30 min</span><span class="pinch"><span></span><span></span></span></div>
+  </div>
+  <div class="item item2">
+    <span class="ico" style="color:#22C55E"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="20" cy="24" r="9"/><circle cx="12" cy="13" r="3.2"/><circle cx="20" cy="9" r="3.2"/><circle cx="28" cy="13" r="3.2"/></svg></span>
+    <div class="txt"><span class="headline">Home in 18 min</span><span class="pinch"><span></span><span></span></span></div>
+  </div>
+</div>
+
+<!-- Scene 3: indoor wrap-up -->
+<div class="hud" id="scene3">
+  <div class="item item1">
+    <span class="ico" style="color:#EF4444"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><rect x="10" y="6" width="20" height="28" rx="4"/><line x1="15" y1="15" x2="25" y2="15"/></svg></span>
+    <div class="txt"><span class="headline">2 tasks left</span><span class="pinch"><span></span><span></span></span></div>
+  </div>
+  <div class="item item2">
+    <span class="ico" style="color:#A78BFA"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="20" cy="20" r="14"/><line x1="20" y1="20" x2="20" y2="11"/></svg></span>
+    <div class="txt"><span class="headline">Alarm 6:00 AM</span><span class="pinch"><span></span><span></span></span></div>
+  </div>
+</div>
+
+<div class="clock-readout active" id="clockReadout">6:42 PM</div>
+<div id="sceneDots"><span class="on"></span><span></span><span></span></div>
+<button id="nextBtn">Next scene →</button>
+
+<script>
+  const video = document.getElementById('cam');
+  const gate = document.getElementById('gate');
+  const startBtn = document.getElementById('startBtn');
+  const err = document.getElementById('err');
+  const scenes = [
+    { el: document.getElementById('scene1'), time: '6:42 PM' },
+    { el: document.getElementById('scene2'), time: '6:58 PM' },
+    { el: document.getElementById('scene3'), time: '7:42 PM' }
+  ];
+  const dots = document.querySelectorAll('#sceneDots span');
+  const clockReadout = document.getElementById('clockReadout');
+  let current = 0;
+
+  function showScene(i){
+    scenes.forEach((s, idx) => s.el.classList.toggle('active', idx === i));
+    dots.forEach((d, idx) => d.classList.toggle('on', idx === i));
+    clockReadout.textContent = scenes[i].time;
+  }
+
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    current = (current + 1) % scenes.length;
+    showScene(current);
+  });
+
+  startBtn.addEventListener('click', async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+      video.srcObject = stream;
+      gate.classList.add('hidden');
+      showScene(0);
+    } catch (e) {
+      err.textContent = 'Camera access failed: ' + e.message + '. Make sure this page is loaded over HTTPS and you allow camera permission.';
+    }
+  });
+</script>
+</body>
+</html>
